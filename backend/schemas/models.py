@@ -1,13 +1,16 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Any
 
 class GenerateRequest(BaseModel):
     prompt: str
-    model_choice: str  
-    context_type: Optional[str] = "Text" 
+    model_choice: Optional[str] = "Gemini 2.5 Flash"  # Updated default
+    context_type: Optional[str] = "Text"              # Updated default
 
 class GenerateResponse(BaseModel):
     text_explanation: str
     canvas_code: Optional[str] = None  
     video_url: Optional[str] = None    
-    model_used: str
+    video_script: Optional[str] = None # Added for video.py
+    quiz_data: Optional[Any] = None    # Added for quiz.py
+    media_type: Optional[str] = "Text" # Added so frontend knows what panel to open
+    model_used: Optional[str] = "Gemini 2.5 Flash"

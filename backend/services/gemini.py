@@ -1,7 +1,10 @@
 from langchain_core.prompts import PromptTemplate
 from services.llm_client import gemini_llm
-from utils.formatter import extract_js_code
+from utils.formatter import extract_js_code # Ensure this file exists in your utils folder!
 
+# ---------------------------------------------------------
+# 1. 3D SIMULATION ROUTE
+# ---------------------------------------------------------
 async def generate_gemini_3d(expanded_prompt: str):
     """Takes Falcon's blueprint and writes Three.js code."""
     template = """You are an expert Three.js developer. Build an interactive 3D data science simulation based on this architectural blueprint:
@@ -29,10 +32,44 @@ async def generate_gemini_3d(expanded_prompt: str):
     
     return text_explanation, clean_code
 
+# ---------------------------------------------------------
+# 2. VIDEO ROUTE
+# ---------------------------------------------------------
 async def generate_gemini_video(expanded_prompt: str):
     """Handles video logic. Returns a placeholder URL until Gemini video generation endpoints are integrated."""
-    # In the future, this will connect to Gemini's video rendering pipeline.
     text_explanation = "Your Data Science educational video has been generated successfully based on the detailed Falcon blueprint."
     mock_video_url = "https://www.w3schools.com/html/mov_bbb.mp4" 
     
     return text_explanation, mock_video_url
+
+# ---------------------------------------------------------
+# 3. TEXT ROUTE
+# ---------------------------------------------------------
+async def generate_gemini_text(prompt: str) -> str:
+    """Handles standard text explanations locally."""
+    template = """You are an AI tutor specializing in Data Science and Data Analytics. 
+    Explain the following concept clearly and concisely: {concept}
+    
+    CRITICAL INSTRUCTIONS:
+    - Use Markdown formatting extensively (Headings, bullet points, bolding).
+    """
+    prompt_template = PromptTemplate(template=template, input_variables=["concept"])
+    chain = prompt_template | gemini_llm
+    response = await chain.ainvoke({"concept": prompt})
+    return getattr(response, 'content', str(response))
+
+# ---------------------------------------------------------
+# 4. QUIZ ROUTE
+# ---------------------------------------------------------
+async def generate_gemini_quiz(expanded_prompt: str) -> str:
+    """Handles quiz generation."""
+    template = """You are an expert curriculum designer. Based on this blueprint:
+    {blueprint}
+    Generate a 5-question multiple-choice quiz.
+    You MUST return the output as a valid JSON array of objects. 
+    Format: [{"question": "...", "options": ["A", "B", "C", "D"], "answer": "The correct option string"}]
+    Output ONLY raw JSON."""
+    prompt_template = PromptTemplate(template=template, input_variables=["blueprint"])
+    chain = prompt_template | gemini_llm
+    response = await chain.ainvoke({"blueprint": expanded_prompt})
+    return getattr(response, 'content', str(response))
