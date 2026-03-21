@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 
 interface SpaceProps {
     initialPrompt: string;
+    initialContentType?: string;
 }
 
 // 1. Define what a message looks like
@@ -16,12 +17,20 @@ interface Message {
     code?: string | null;
 }
 
-export default function Space({ initialPrompt }: SpaceProps) {
+function createMessageId(): string {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+    }
+
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+export default function Space({ initialPrompt, initialContentType = "Text" }: SpaceProps) {
     const [prompt, setPrompt] = useState("");
     const [isCanvasOpen, setIsCanvasOpen] = useState(false);
 
     const [selectedModel, setSelectedModel] = useState("Gemini 2.5 Flash");
-    const [contentType, setContentType] = useState("Text");
+    const [contentType, setContentType] = useState(initialContentType || "Text");
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -30,6 +39,7 @@ export default function Space({ initialPrompt }: SpaceProps) {
 
     // Reference for auto-scrolling
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const hasAutoSubmittedInitialPrompt = useRef(false);
 
     // Auto-scroll whenever messages change
     useEffect(() => {
@@ -40,8 +50,14 @@ export default function Space({ initialPrompt }: SpaceProps) {
         if (!userPrompt.trim()) return;
 
         // Add the user's message to the chat history
-        const userMsg: Message = { id: Date.now().toString(), role: "user", content: userPrompt };
+        const userMsg: Message = { id: createMessageId(), role: "user", content: userPrompt };
         setMessages((prev) => [...prev, userMsg]);
+
+        // Build a backend-ready history including the current user prompt.
+        const historyPayload = [...messages, userMsg].map((m) => ({
+            role: m.role === "ai" ? "assistant" : "user",
+            content: m.content
+        }));
 
         setIsLoading(true);
         setIsCanvasOpen(false);
@@ -52,6 +68,7 @@ export default function Space({ initialPrompt }: SpaceProps) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     prompt: userPrompt,
+                    history: historyPayload,
                     model_choice: selectedModel,
                     context_type: contentType || "Text"
                 }),
@@ -61,7 +78,7 @@ export default function Space({ initialPrompt }: SpaceProps) {
 
             // Add the AI's response to the chat history
             const aiMsg: Message = {
-                id: (Date.now() + 1).toString(),
+                id: createMessageId(),
                 role: "ai",
                 content: data.text_explanation,
                 code: data.media_type === "3D_simulation" ? data.canvas_code : null
@@ -77,7 +94,7 @@ export default function Space({ initialPrompt }: SpaceProps) {
         } catch (error) {
             console.error("Engine Connection Error:", error);
             const errorMsg: Message = {
-                id: (Date.now() + 1).toString(),
+                id: createMessageId(),
                 role: "ai",
                 content: "Failed to connect to the Akriti backend. Is the FastAPI server running?"
             };
@@ -89,7 +106,8 @@ export default function Space({ initialPrompt }: SpaceProps) {
 
     // Run automatically when the Space mounts with the prompt from the Home screen
     useEffect(() => {
-        if (initialPrompt && messages.length === 0) {
+        if (initialPrompt && !hasAutoSubmittedInitialPrompt.current) {
+            hasAutoSubmittedInitialPrompt.current = true;
             generateContent(initialPrompt);
         }
     }, [initialPrompt]);
@@ -98,6 +116,11 @@ export default function Space({ initialPrompt }: SpaceProps) {
         generateContent(prompt);
         setPrompt("");
     };
+
+    const latestCanvasCode = messages.filter((m) => m.code).pop()?.code;
+    const safeCanvasCode = latestCanvasCode ?? "";
+    const encodedCanvasCode = encodeURIComponent(safeCanvasCode);
+    const canvasSrcDoc = `<!DOCTYPE html><html><head><style>body { margin: 0; overflow: hidden; background-color: #000; }</style><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script><script>window.OrbitControls = THREE.OrbitControls;</script></head><body><script>const __ENCODED_CODE__ = "${encodedCanvasCode}"; const __USER_CODE__ = decodeURIComponent(__ENCODED_CODE__); try { new Function(__USER_CODE__)(); } catch(e) { const errMsg = (e && e.message) ? e.message : String(e); const errorDiv = document.createElement('div'); errorDiv.style.color = 'red'; errorDiv.style.padding = '20px'; errorDiv.style.fontFamily = 'sans-serif'; errorDiv.textContent = 'Error running 3D code: ' + errMsg; document.body.innerHTML = ''; document.body.appendChild(errorDiv); }</script></body></html>`;
 
     return (
         <div className="flex h-full w-full bg-white relative overflow-hidden">
@@ -129,11 +152,18 @@ export default function Space({ initialPrompt }: SpaceProps) {
                                                 remarkPlugins={[remarkGfm]}
                                                 components={{
                                                     code({ node, inline, className, children, ...props }: any) {
-                                                        return !inline ? (
-                                                            <div className="bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm font-mono">
-                                                                <code {...props}>{children}</code>
-                                                            </div>
-                                                        ) : (
+                                                        const childText = String(children ?? "");
+                                                        const isBlock = Boolean(className?.includes("language-")) || childText.includes("\n");
+
+                                                        if (isBlock) {
+                                                            return (
+                                                                <pre className="bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm font-mono">
+                                                                    <code className={className} {...props}>{children}</code>
+                                                                </pre>
+                                                            );
+                                                        }
+
+                                                        return (
                                                             <code className="bg-gray-100 text-pink-600 px-1 py-0.5 rounded text-sm font-mono" {...props}>
                                                                 {children}
                                                             </code>
@@ -176,7 +206,7 @@ export default function Space({ initialPrompt }: SpaceProps) {
                             </div>
                             <div className="flex items-center gap-2 text-gray-500 mt-2">
                                 <Loader2 className="animate-spin" size={20} />
-                                <span>Akriti Engine is reasoning...</span>
+                                <span>Anubhav Engine is reasoning...</span>
                             </div>
                         </div>
                     )}
@@ -204,7 +234,7 @@ export default function Space({ initialPrompt }: SpaceProps) {
             {/* RIGHT SIDE: Sliding Canvas Panel */}
             <div className={`bg-[#fbfbfb] h-full transition-all duration-300 ease-in-out flex flex-col border-l border-gray-200 ${isCanvasOpen ? 'w-1/2 translate-x-0' : 'w-0 translate-x-full overflow-hidden'}`}>
                 <div className="h-14 border-b border-gray-200 flex items-center justify-between px-4 bg-white shrink-0">
-                    <span className="font-medium text-sm text-gray-800">Akriti 3D Sandbox</span>
+                    <span className="font-medium text-sm text-gray-800">Anubhav 3D Sandbox</span>
                     <button onClick={() => setIsCanvasOpen(false)} className="text-gray-400 hover:text-gray-700 p-1 rounded-md hover:bg-gray-100 transition-colors">
                         <X size={18} />
                     </button>
@@ -212,10 +242,10 @@ export default function Space({ initialPrompt }: SpaceProps) {
                 <div className="flex-1 p-4">
                     <div className="w-full h-full bg-black rounded-xl border border-gray-200 overflow-hidden relative shadow-inner">
                         {/* We use the code from the MOST RECENT message that has code */}
-                        {messages.filter(m => m.code).pop()?.code ? (
+                        {latestCanvasCode ? (
                             <iframe
                                 title="3D Canvas"
-                                srcDoc={`<!DOCTYPE html><html><head><style>body { margin: 0; overflow: hidden; background-color: #000; }</style><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script><script>window.OrbitControls = THREE.OrbitControls;</script></head><body><script>try { ${messages.filter(m => m.code).pop()?.code} } catch(e) { document.body.innerHTML = '<div style="color:red; padding:20px; font-family:sans-serif;">Error running 3D code: ' + e.message + '</div>'; }</script></body></html>`}
+                                srcDoc={canvasSrcDoc}
                                 className="w-full h-full border-0"
                                 sandbox="allow-scripts"
                             />

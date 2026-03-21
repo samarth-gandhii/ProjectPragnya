@@ -58,7 +58,7 @@ export default function Sidebar({ userName, onSearchClick, onGuideToggle, onHome
             {!isCollapsed && (
               <div onClick={onHomeClick} className="flex items-center space-x-2 font-bold text-xl cursor-pointer hover:opacity-80 transition-opacity">
                 <span className="w-6 h-6 bg-black text-white rounded-md flex items-center justify-center text-sm">A</span>
-                <span>Akriti</span>
+                <span>Anubhav_AI</span>
               </div>
             )}
             <button onClick={() => setIsCollapsed(!isCollapsed)} className="text-gray-400 hover:text-gray-600 mx-auto">
@@ -147,7 +147,7 @@ export default function Sidebar({ userName, onSearchClick, onGuideToggle, onHome
           <div className="p-4 shrink-0 relative" ref={userMenuRef}>
             {!isCollapsed && (
               <div className="border border-green-200 bg-green-50 text-green-700 text-xs text-center py-1 rounded-t-lg">
-                Free Plan
+                {/* Free Plan */}
               </div>
             )}
             <button

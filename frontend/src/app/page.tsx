@@ -2,13 +2,13 @@
 
 import React, { useState, useRef } from "react";
 import Sidebar from "@/components/Sidebar";
-import ActionCards from "@/components/ActionCards";
+//import ActionCards from "@/components/ActionCards";
 import SearchBar from "@/components/SearchBar";
 import ContentGrid from "@/components/ContentGrid";
 import Space from "@/components/Space";
 
 export default function Home() {
-  const [userName] = useState("Admiral");
+  const [userName] = useState("New User");
   const [prompt, setPrompt] = useState("");
   const [showGuide, setShowGuide] = useState(false);
   const [selectedModel, setSelectedModel] = useState("Gemini 2.5 Flash");
@@ -17,6 +17,7 @@ export default function Home() {
   // Navigation State
   const [activeView, setActiveView] = useState<"dashboard" | "space">("dashboard");
   const [submittedPrompt, setSubmittedPrompt] = useState("");
+  const [submittedContentType, setSubmittedContentType] = useState("Text");
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -24,14 +25,16 @@ export default function Home() {
   const handleGenerate = () => {
     if (!prompt.trim()) return;
     setSubmittedPrompt(prompt);
+    setSubmittedContentType(contentType || "Text");
     setActiveView("space");
     setPrompt(""); // Clear the home input bar
   };
 
-  // Fires when user clicks "Akriti" in the Sidebar
+  // Fires when user clicks "AnubhavAI" in the Sidebar
   const handleHomeClick = () => {
     setActiveView("dashboard");
     setSubmittedPrompt("");
+    setSubmittedContentType("Text");
   };
 
   return (
@@ -65,7 +68,7 @@ export default function Home() {
               <h1 className="text-4xl font-semibold text-gray-900">Hey {userName}, ready to learn?</h1>
             </div>
 
-            <ActionCards showGuide={showGuide} />
+            {/* <ActionCards showGuide={showGuide} /> */}
             
             <SearchBar 
               ref={searchInputRef}
@@ -82,7 +85,7 @@ export default function Home() {
           </div>
         ) : (
           // Mount the Space environment and pass the prompt
-          <Space initialPrompt={submittedPrompt} /> 
+          <Space initialPrompt={submittedPrompt} initialContentType={submittedContentType} /> 
         )}
 
       </main>

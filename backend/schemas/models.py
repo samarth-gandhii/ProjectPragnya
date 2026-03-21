@@ -3,6 +3,7 @@ from typing import Optional, Any
 
 class GenerateRequest(BaseModel):
     prompt: str
+    history: Optional[list[dict[str, str]]] = []
     model_choice: Optional[str] = "Gemini 2.5 Flash"  # Updated default
     context_type: Optional[str] = "Text"              # Updated default
 

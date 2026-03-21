@@ -1,8 +1,8 @@
 from services.gemini import generate_gemini_quiz
 import json
 
-async def generate_quiz(blueprint: str) -> dict:
-    raw_response = await generate_gemini_quiz(blueprint)
+async def generate_quiz(blueprint: str, history: list) -> dict:
+    raw_response = await generate_gemini_quiz(blueprint, history)
     
     # Clean up the response in case Gemini wrapped it in markdown
     cleaned_json = raw_response.replace("```json", "").replace("```", "").strip()

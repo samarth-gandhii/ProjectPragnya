@@ -8,7 +8,7 @@ load_dotenv()
 
 # 1. Initialize Local Falcon 7B
 # Make sure Ollama is running on your machine and you have pulled the falcon model: `ollama run falcon`
-falcon_llm = OllamaLLM(model="falcon") 
+falcon_llm = OllamaLLM(model="falcon3:7b") 
 
 # 2. Initialize Gemini 2.5 Flash
 gemini_llm = ChatGoogleGenerativeAI(
