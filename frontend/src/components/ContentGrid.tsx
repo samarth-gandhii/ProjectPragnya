@@ -1,12 +1,105 @@
-import { AlignLeft, Play } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { AlignLeft, Play, ChevronDown, ChevronUp } from "lucide-react";
+import { useRouter } from "next/navigation"; // Added for routing to Space.tsx
+
+const CONTENT_DATA = [
+  {
+    id: "dijkstra", // Changed to string IDs for easier routing
+    title: "Dijkstra's Algorithm",
+    subtitle: "algorithms", // Used for filtering
+    icon: <AlignLeft className="text-gray-400 mt-1 shrink-0" size={18} />,
+    header: (
+      <div className="h-32 bg-blue-900 relative">
+        <div className="absolute inset-0 opacity-50 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+      </div>
+    ),
+  },
+  {
+    id: "a-star",
+    title: "A* Search Algorithm",
+    subtitle: "algorithms",
+    icon: <AlignLeft className="text-gray-400 mt-1 shrink-0" size={18} />,
+    header: (
+      <div className="h-32 bg-white flex items-center justify-center border-b border-gray-100">
+        <span className="font-serif text-xl font-bold text-gray-800">A* Search</span>
+      </div>
+    ),
+  },
+  {
+    id: "greedy",
+    title: "Greedy Algorithms",
+    subtitle: "algorithms",
+    icon: <AlignLeft className="text-gray-400 mt-1 shrink-0" size={18} />,
+    header: (
+      <div className="h-32 bg-indigo-900 relative">
+        <div className="absolute inset-0 opacity-50 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+      </div>
+    ),
+  },
+  {
+    id: "solar-system",
+    title: "Solar System Basics",
+    subtitle: "Space", // Used for filtering
+    icon: <Play className="text-gray-400 mt-1 shrink-0" size={18} />,
+    header: (
+      <div className="h-32 bg-gray-800 relative">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+      </div>
+    ),
+  }
+];
+
+const TABS = ["For You", "Algorithms", "Space"];
 
 export default function ContentGrid() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState("For You");
+  const [visibleCount, setVisibleCount] = useState(3);
+
+  // 1. Filter logic based on the active tab
+  const filteredData = CONTENT_DATA.filter((card) => {
+    if (activeTab === "For You") return true;
+    if (activeTab === "Algorithms" && card.subtitle === "algorithms") return true;
+    if (activeTab === "Space" && card.subtitle === "Space") return true;
+    return false;
+  });
+
+  const toggleShowMore = () => {
+    if (visibleCount >= filteredData.length) {
+      setVisibleCount(3);
+    } else {
+      setVisibleCount((prev) => prev + 3);
+    }
+  };
+
+  const isShowingAll = visibleCount >= filteredData.length;
+
+  // 2. Click handler to navigate to the Space view
+  const handleCardClick = (id: string) => {
+    // Assuming your routing is set up like /space/[id]
+    // If you are rendering conditionally on the same page instead, you would update state here.
+    router.push(`/space/${id}`); 
+  };
+
   return (
     <>
       {/* Tabs Section */}
       <div className="flex space-x-2 overflow-x-auto pb-4 mb-6 hide-scrollbar">
-        {["For You", "Education", "Arts, Design & Media", "Languages & Literature", "History & Archaeology"].map((tab, i) => (
-          <button key={i} className={`px-4 py-2 rounded-full text-sm whitespace-nowrap border ${i === 0 ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}>
+        {TABS.map((tab, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              setActiveTab(tab);
+              setVisibleCount(3); // Reset visible count when switching tabs
+            }}
+            className={`px-4 py-2 rounded-full text-sm whitespace-nowrap border transition-colors ${
+              activeTab === tab
+                ? "bg-gray-900 text-white border-gray-900"
+                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+            }`}
+          >
             {tab}
           </button>
         ))}
@@ -14,51 +107,41 @@ export default function ContentGrid() {
 
       {/* Grid */}
       <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className="border border-gray-200 rounded-xl overflow-hidden bg-white hover:shadow-md transition-shadow cursor-pointer">
-          <div className="h-32 bg-blue-900 relative">
-            <div className="absolute inset-0 opacity-50 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-          </div>
-          <div className="p-4 flex gap-3">
-            <AlignLeft className="text-gray-400 mt-1 shrink-0" size={18} />
-            <div>
-              <h3 className="font-medium text-gray-900 leading-tight">The British Empire</h3>
-              <p className="text-xs text-gray-500 mt-1">24 days ago</p>
+        {/* Render only the filtered and sliced data */}
+        {filteredData.slice(0, visibleCount).map((card) => (
+          <div
+            key={card.id}
+            onClick={() => handleCardClick(card.id)}
+            className="border border-gray-200 rounded-xl overflow-hidden bg-white hover:shadow-md transition-shadow cursor-pointer flex flex-col"
+          >
+            {card.header}
+            <div className="p-4 flex gap-3 flex-1">
+              {card.icon}
+              <div>
+                <h3 className="font-medium text-gray-900 leading-tight">
+                  {card.title}
+                </h3>
+                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">
+                  {card.subtitle}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="border border-gray-200 rounded-xl overflow-hidden bg-white hover:shadow-md transition-shadow cursor-pointer">
-          <div className="h-32 bg-white flex items-center justify-center border-b border-gray-100">
-            <span className="font-serif text-xl font-bold text-gray-800">The Genetic Code</span>
-          </div>
-          <div className="p-4 flex gap-3">
-            <AlignLeft className="text-gray-400 mt-1 shrink-0" size={18} />
-            <div>
-              <h3 className="font-medium text-gray-900 leading-tight">The Genetic Code and Translation</h3>
-              <p className="text-xs text-gray-500 mt-1">24 days ago</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="border border-gray-200 rounded-xl overflow-hidden bg-white hover:shadow-md transition-shadow cursor-pointer">
-          <div className="h-32 bg-gray-800 relative">
-             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          </div>
-          <div className="p-4 flex gap-3">
-            <Play className="text-gray-400 mt-1 shrink-0" size={18} />
-            <div>
-              <h3 className="font-medium text-gray-900 leading-tight">Black Holes Explained – From Birth to Death</h3>
-              <p className="text-xs text-gray-500 mt-1">12 months ago</p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
-      <div className="text-center">
-        <button className="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center justify-center mx-auto gap-1">
-          Show More <span>▼</span>
-        </button>
-      </div>
+      {/* Show More Button (Only renders if filtered data is greater than 3) */}
+      {filteredData.length > 3 && (
+        <div className="text-center">
+          <button
+            onClick={toggleShowMore}
+            className="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center justify-center mx-auto gap-1 transition-colors"
+          >
+            {isShowingAll ? "Show Less" : "Show More"}
+            {isShowingAll ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+        </div>
+      )}
     </>
   );
 }

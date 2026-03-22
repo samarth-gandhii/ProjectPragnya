@@ -30,7 +30,7 @@ export default function Home() {
     setPrompt(""); // Clear the home input bar
   };
 
-  // Fires when user clicks "AnubhavAI" in the Sidebar
+  // Fires when user clicks "SeeKro" in the Sidebar
   const handleHomeClick = () => {
     setActiveView("dashboard");
     setSubmittedPrompt("");

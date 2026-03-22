@@ -206,7 +206,7 @@ export default function Space({ initialPrompt, initialContentType = "Text" }: Sp
                             </div>
                             <div className="flex items-center gap-2 text-gray-500 mt-2">
                                 <Loader2 className="animate-spin" size={20} />
-                                <span>Anubhav Engine is reasoning...</span>
+                                <span>SeeKro Engine is reasoning...</span>
                             </div>
                         </div>
                     )}
@@ -234,7 +234,7 @@ export default function Space({ initialPrompt, initialContentType = "Text" }: Sp
             {/* RIGHT SIDE: Sliding Canvas Panel */}
             <div className={`bg-[#fbfbfb] h-full transition-all duration-300 ease-in-out flex flex-col border-l border-gray-200 ${isCanvasOpen ? 'w-1/2 translate-x-0' : 'w-0 translate-x-full overflow-hidden'}`}>
                 <div className="h-14 border-b border-gray-200 flex items-center justify-between px-4 bg-white shrink-0">
-                    <span className="font-medium text-sm text-gray-800">Anubhav 3D Sandbox</span>
+                    <span className="font-medium text-sm text-gray-800">SeeKro 3D Sandbox</span>
                     <button onClick={() => setIsCanvasOpen(false)} className="text-gray-400 hover:text-gray-700 p-1 rounded-md hover:bg-gray-100 transition-colors">
                         <X size={18} />
                     </button>

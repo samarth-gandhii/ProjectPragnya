@@ -57,8 +57,8 @@ export default function Sidebar({ userName, onSearchClick, onGuideToggle, onHome
           <div className="p-4 flex items-center justify-between shrink-0">
             {!isCollapsed && (
               <div onClick={onHomeClick} className="flex items-center space-x-2 font-bold text-xl cursor-pointer hover:opacity-80 transition-opacity">
-                <span className="w-6 h-6 bg-black text-white rounded-md flex items-center justify-center text-sm">A</span>
-                <span>Anubhav_AI</span>
+                <img src="/favicon.png" alt="SeeKro Logo" className="w-8 h-8 rounded-full border-2 border-black object-cover" />
+                <span>SeeKro</span>
               </div>
             )}
             <button onClick={() => setIsCollapsed(!isCollapsed)} className="text-gray-400 hover:text-gray-600 mx-auto">
