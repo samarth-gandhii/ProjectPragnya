@@ -34,7 +34,7 @@ export default function Home() {
     setPrompt("");
   };
 
-  // Fires when user clicks "SeeKro" in the Sidebar
+  // Fires when user clicks "Pragnya AI" in the Sidebar
   const handleHomeClick = () => {
     setActiveView("dashboard");
     setSubmittedPrompt("");
@@ -76,7 +76,7 @@ export default function Home() {
         {activeView === "dashboard" ? (
           <div className="max-w-5xl mx-auto px-8 pt-20 pb-12 w-full">
             <div className="text-center mb-10">
-              <h1 className="text-4xl font-semibold text-gray-900">Hey {userName}, ready to learn?</h1>
+              <h1 className="text-4xl font-semibold text-gray-900">Welcome to Pragnya AI, ready to learn?</h1>
             </div>
 
             {/* <ActionCards showGuide={showGuide} /> */}

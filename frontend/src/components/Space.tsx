@@ -99,7 +99,7 @@ export default function Space({ initialPrompt, initialContentType = "Text" }: Sp
             const errorMsg: Message = {
                 id: createMessageId(),
                 role: "ai",
-                content: "Failed to connect to the Akriti backend. Is the FastAPI server running?"
+                content: "Failed to connect to the Pragnya AI backend. Is the FastAPI server running?"
             };
             setMessages((prev) => [...prev, errorMsg]);
         } finally {
@@ -234,7 +234,7 @@ export default function Space({ initialPrompt, initialContentType = "Text" }: Sp
                             </div>
                             <div className="flex items-center gap-2 text-gray-500 mt-2">
                                 <Loader2 className="animate-spin" size={20} />
-                                <span>SeeKro Engine is reasoning...</span>
+                                <span>Pragnya AI Engine is reasoning...</span>
                             </div>
                         </div>
                     )}
@@ -262,7 +262,7 @@ export default function Space({ initialPrompt, initialContentType = "Text" }: Sp
             <div className={`bg-[#fbfbfb] h-full transition-all duration-300 ease-in-out flex flex-col border-l border-gray-200 ${isCanvasOpen ? (isFullScreen ? 'w-full translate-x-0' : 'w-1/2 translate-x-0') : 'w-0 translate-x-full overflow-hidden'}`}>
                 <div className="h-14 border-b border-gray-200 flex items-center justify-between px-4 bg-white shrink-0">
                     <span className="font-medium text-sm text-gray-800">
-                        {activePanelMode === "Quiz" ? "Interactive Quiz" : "SeeKro 3D Sandbox"}
+                        {activePanelMode === "Quiz" ? "Interactive Quiz" : "Pragnya AI 3D Sandbox"}
                     </span>
                     <button onClick={() => { setIsCanvasOpen(false); setIsFullScreen(false); }} className="text-gray-400 hover:text-gray-700 p-1 rounded-md hover:bg-gray-100 transition-colors">
                         <X size={18} />

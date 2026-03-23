@@ -10,9 +10,9 @@ interface ContentGridProps {
 
 const CONTENT_DATA = [
   {
-    id: "dijkstra",
-    title: "Dijkstra's Algorithm",
-    subtitle: "algorithms",
+    id: "solar-system",
+    title: "Solar System Basics",
+    subtitle: "Space",
     icon: <AlignLeft className="text-gray-400 mt-1 shrink-0" size={18} />,
     header: (
       <div className="h-32 bg-blue-900 relative">
@@ -43,9 +43,9 @@ const CONTENT_DATA = [
     ),
   },
   {
-    id: "solar-system",
-    title: "Solar System Basics",
-    subtitle: "Space",
+    id: "dijkstra",
+    title: "Dijkstra's Algorithm",
+    subtitle: "algorithms",
     icon: <Play className="text-gray-400 mt-1 shrink-0" size={18} />,
     header: (
       <div className="h-32 bg-gray-800 relative">
@@ -98,8 +98,8 @@ export default function ContentGrid({ onCardClick }: ContentGridProps) {
               setVisibleCount(3); // Reset visible count when switching tabs
             }}
             className={`px-4 py-2 rounded-full text-sm whitespace-nowrap border transition-colors ${activeTab === tab
-                ? "bg-gray-900 text-white border-gray-900"
-                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+              ? "bg-gray-900 text-white border-gray-900"
+              : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
               }`}
           >
             {tab}
