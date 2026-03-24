@@ -11,7 +11,7 @@ os.makedirs("Cards", exist_ok=True)
 # 1. SET YOUR TARGET HERE
 # Options: "dijkstra", "astar", "greedy", "solar"
 # ==========================================
-CURRENT_TARGET = "solar"
+CURRENT_TARGET = "blackhole"
 
 # ==========================================
 # 2. TEMPLATES
@@ -20,20 +20,20 @@ SPACE_TEMPLATE = """You are an expert astronomer.
 Generate a comprehensive explanation for: {topic}.
 
 You MUST strictly follow this exact Markdown structure:
-### 1. What is Solar System?
+### 1. What is a Black Hole?
 ➔ [One sentence definition]
 
-### 2. Planets:
-[Give 2-3 line description of each planet]
+### 2. Types of Black Holes:
+[Give 2-3 line description of each type: Stellar, Supermassive, Intermediate, Primordial]
 
-### 3. Other entities:
-[Give 2-3 line description of each of the following: Asteroids, Comets, Dwarf Planets, Kuiper Belt, Oort Cloud, Interstellar Objects, Sun]
+### 3. Anatomy of a Black Hole:
+[Give 2-3 line description of each of the following: Event Horizon, Singularity, Accretion Disk, Photon Sphere, Relativistic Jets]
 
 ### 4. Key Facts & Numbers:
 [Provide 3-4 mind-blowing statistics in bullet points]
 
 ### 5. Importance and Exploration:
-[List 3 specific historical or ongoing space missions related to this topic as bullet points in bold]"""
+[List 3 specific historical or ongoing space missions/observations related to this topic as bullet points in bold]"""
 
 
 # ==========================================
@@ -66,6 +66,13 @@ TOPICS = {
         "type": "space",
         "filename": "Cards/Solar.py",
         "func_name": "get_solar_content",
+        "extra_context": ""
+    },
+    "blackhole": {
+        "name": "Black Hole",
+        "type": "space",
+        "filename": "Cards/Blackhole.py",
+        "func_name": "get_blackhole_content",
         "extra_context": ""
     }
 }

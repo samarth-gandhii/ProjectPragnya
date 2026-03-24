@@ -12,6 +12,7 @@ from Cards.dijkastraAlgo import get_dijkstra_content
 from Cards.astarAlgo import get_astar_content
 from Cards.greedyAlgo import get_greedy_content
 from Cards.Solar import get_solar_content
+from Cards.Blackhole import get_blackhole_content
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -72,7 +73,8 @@ async def get_card_content(topic_id: str):
         "dijkstra": get_dijkstra_content,
         "a-star": get_astar_content,
         "greedy": get_greedy_content,
-        "solar-system": get_solar_content
+        "solar-system": get_solar_content,
+        "blackhole": get_blackhole_content
     }
     if topic_id in cards_map:
         return cards_map[topic_id]()

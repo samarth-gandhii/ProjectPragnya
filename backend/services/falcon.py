@@ -50,7 +50,7 @@ Output ONLY the expanded prompt inside a single block. No conversational intro."
 
     # 3. Apply Sliding Window (Last 6 messages)
     # This is safe even if history is empty []
-    trimmed_history = history[-6:] if history else []
+    trimmed_history = history[-4:] if history else []
 
     # 4. Execute the Chain
     chain = prompt_template | falcon_llm
