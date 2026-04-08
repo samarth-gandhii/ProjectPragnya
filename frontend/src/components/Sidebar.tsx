@@ -14,6 +14,7 @@ interface SidebarProps {
 
 export default function Sidebar({ userName, onSearchClick, onGuideToggle, onHomeClick }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showAddContent, setShowAddContent] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -49,19 +50,75 @@ export default function Sidebar({ userName, onSearchClick, onGuideToggle, onHome
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const isCompact = !isMobileOpen && isCollapsed;
+
+  const closeMobileDrawer = () => {
+    setIsMobileOpen(false);
+    setShowAddContent(false);
+    setShowUserMenu(false);
+  };
+
+  const handleSearchAction = () => {
+    onSearchClick();
+    closeMobileDrawer();
+  };
+
+  const handleHomeAction = () => {
+    onHomeClick();
+    closeMobileDrawer();
+  };
+
+  const handleGuideAction = () => {
+    onGuideToggle();
+    closeMobileDrawer();
+  };
+
   return (
     <>
-      <aside className={`${isCollapsed ? 'md:w-20' : 'md:w-64'} hidden md:flex transition-all duration-300 bg-[#fbfbfb] border-r border-gray-200 flex-col justify-between h-full relative z-20`}>
+      <button
+        onClick={() => {
+          if (isMobileOpen) {
+            closeMobileDrawer();
+          } else {
+            setIsMobileOpen(true);
+          }
+        }}
+        className="md:hidden fixed top-3 left-3 z-50 bg-white border border-gray-200 shadow-sm rounded-lg p-2 text-gray-600 hover:text-gray-800"
+        aria-label="Toggle sidebar"
+      >
+        {isMobileOpen ? <X size={18} /> : <Menu size={18} />}
+      </button>
+
+      {isMobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/30 z-40"
+          onClick={closeMobileDrawer}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`${isCollapsed ? 'md:w-20' : 'md:w-64'} ${isMobileOpen ? 'fixed inset-y-0 left-0 w-72 z-50 flex' : 'hidden'} md:flex md:relative md:inset-auto transition-all duration-300 bg-[#fbfbfb] border-r border-gray-200 flex-col justify-between h-full`}
+      >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-4 flex items-center justify-between shrink-0">
-            {!isCollapsed && (
-              <div onClick={onHomeClick} className="flex items-center space-x-2 font-bold text-xl cursor-pointer hover:opacity-80 transition-opacity">
+            {!isCompact && (
+              <div onClick={handleHomeAction} className="flex items-center space-x-2 font-bold text-xl cursor-pointer hover:opacity-80 transition-opacity">
                 <div className="w-8 h-8 rounded-full border-2 border-black flex items-center justify-center font-bold text-lg">P</div>
                 <span>Pragnya AI</span>
               </div>
             )}
-            <button onClick={() => setIsCollapsed(!isCollapsed)} className="text-gray-400 hover:text-gray-600 mx-auto">
+            <button
+              onClick={() => {
+                if (isMobileOpen) {
+                  closeMobileDrawer();
+                } else {
+                  setIsCollapsed(!isCollapsed);
+                }
+              }}
+              className="text-gray-400 hover:text-gray-600 mx-auto"
+            >
               <Menu size={20} />
             </button>
           </div>
@@ -70,15 +127,15 @@ export default function Sidebar({ userName, onSearchClick, onGuideToggle, onHome
           <div className="px-3 pb-2 relative shrink-0" ref={addContentRef}>
             <button
               onClick={() => setShowAddContent(!showAddContent)}
-              className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-2'} bg-gray-100 hover:bg-gray-200 py-2 px-3 rounded-full text-sm font-medium transition-colors`}
+              className={`w-full flex items-center ${isCompact ? 'justify-center' : 'space-x-2'} bg-gray-100 hover:bg-gray-200 py-2 px-3 rounded-full text-sm font-medium transition-colors`}
             >
               <Plus size={16} />
-              {!isCollapsed && <span>Add content</span>}
+              {!isCompact && <span>Add content</span>}
             </button>
 
             {/* Add Content Popup */}
             {showAddContent && (
-              <div className="absolute top-0 left-full ml-2 w-48 bg-white border border-gray-200 shadow-lg rounded-xl p-2 z-50">
+              <div className={`${isMobileOpen ? 'top-full left-0 mt-2 w-full' : 'top-0 left-full ml-2 w-48'} absolute bg-white border border-gray-200 shadow-lg rounded-xl p-2 z-50`}>
                 <button className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg text-sm"><Upload size={16} /> Upload</button>
                 <button className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg text-sm"><LinkIcon size={16} /> Link</button>
                 <button className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg text-sm"><ClipboardPaste size={16} /> Paste</button>
@@ -91,26 +148,26 @@ export default function Sidebar({ userName, onSearchClick, onGuideToggle, onHome
           <div className="flex-1 overflow-y-auto hide-scrollbar">
             {/* Main Nav */}
             <nav className="px-3 space-y-1 mt-2 text-sm text-gray-600 relative">
-              <button onClick={onSearchClick} className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 hover:bg-gray-100 rounded-lg`}>
-                <Search size={18} /> {!isCollapsed && <span>Search</span>}
+              <button onClick={handleSearchAction} className={`w-full flex items-center ${isCompact ? 'justify-center' : 'space-x-3'} px-3 py-2 hover:bg-gray-100 rounded-lg`}>
+                <Search size={18} /> {!isCompact && <span>Search</span>}
               </button>
 
               {/* History Toggle Button */}
               <button
                 onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-                className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-3 py-2 hover:bg-gray-100 rounded-lg ${isHistoryOpen && !isCollapsed ? 'bg-gray-100' : ''}`}
+                className={`w-full flex items-center ${isCompact ? 'justify-center' : 'justify-between'} px-3 py-2 hover:bg-gray-100 rounded-lg ${isHistoryOpen && !isCompact ? 'bg-gray-100' : ''}`}
               >
-                <div className={`flex items-center ${isCollapsed ? 'space-x-0' : 'space-x-3'}`}>
+                <div className={`flex items-center ${isCompact ? 'space-x-0' : 'space-x-3'}`}>
                   <Clock size={18} />
-                  {!isCollapsed && <span>History</span>}
+                  {!isCompact && <span>History</span>}
                 </div>
-                {!isCollapsed && (
+                {!isCompact && (
                   isHistoryOpen ? <ChevronDown size={14} className="text-gray-400" /> : <ChevronRight size={14} className="text-gray-400" />
                 )}
               </button>
 
               {/* Scrollable History List (Accordion) */}
-              {!isCollapsed && isHistoryOpen && (
+              {!isCompact && isHistoryOpen && (
                 <div className="mt-1 mb-2 pl-2 pr-1 max-h-40 overflow-y-auto space-y-1">
                   {dummyHistory.map((item) => (
                     <button
@@ -125,45 +182,45 @@ export default function Sidebar({ userName, onSearchClick, onGuideToggle, onHome
               )}
             </nav>
 
-            {!isCollapsed && <div className="px-6 py-2 mt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Spaces</div>}
+            {!isCompact && <div className="px-6 py-2 mt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Spaces</div>}
             <nav className="px-3 space-y-1 text-sm text-gray-600">
-              <button className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 hover:bg-gray-100 rounded-lg`}>
-                <Box size={18} /> {!isCollapsed && <span>{userName}&apos;s Space</span>}
+              <button className={`w-full flex items-center ${isCompact ? 'justify-center' : 'space-x-3'} px-3 py-2 hover:bg-gray-100 rounded-lg`}>
+                <Box size={18} /> {!isCompact && <span>{userName}&apos;s Space</span>}
               </button>
             </nav>
 
-            {!isCollapsed && <div className="px-6 mt-6 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Help & Tools</div>}
+            {!isCompact && <div className="px-6 mt-6 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Help & Tools</div>}
             <nav className="px-3 space-y-1 text-sm text-gray-600 pb-4">
-              <button onClick={() => setShowFeedback(true)} className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 hover:bg-gray-100 rounded-lg`}>
-                <MessageSquare size={18} /> {!isCollapsed && <span>Feedback</span>}
+              <button onClick={() => setShowFeedback(true)} className={`w-full flex items-center ${isCompact ? 'justify-center' : 'space-x-3'} px-3 py-2 hover:bg-gray-100 rounded-lg`}>
+                <MessageSquare size={18} /> {!isCompact && <span>Feedback</span>}
               </button>
-              <button onClick={onGuideToggle} className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 hover:bg-gray-100 rounded-lg`}>
-                <BookOpen size={18} /> {!isCollapsed && <span>Quick Guide</span>}
+              <button onClick={handleGuideAction} className={`w-full flex items-center ${isCompact ? 'justify-center' : 'space-x-3'} px-3 py-2 hover:bg-gray-100 rounded-lg`}>
+                <BookOpen size={18} /> {!isCompact && <span>Quick Guide</span>}
               </button>
             </nav>
           </div>
 
           {/* User Profile Footer */}
           <div className="p-4 shrink-0 relative" ref={userMenuRef}>
-            {!isCollapsed && (
+            {!isCompact && (
               <div className="border border-green-200 bg-green-50 text-green-700 text-xs text-center py-1 rounded-t-lg">
                 {/* Free Plan */}
               </div>
             )}
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className={`w-full flex items-center ${isCollapsed ? 'justify-center p-2 rounded-lg' : 'justify-between border border-gray-200 border-t-0 bg-white p-2 rounded-b-lg'} hover:bg-gray-50`}
+              className={`w-full flex items-center ${isCompact ? 'justify-center p-2 rounded-lg' : 'justify-between border border-gray-200 border-t-0 bg-white p-2 rounded-b-lg'} hover:bg-gray-50`}
             >
               <div className="flex items-center space-x-2 text-sm font-medium">
                 <div className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs">{userName.charAt(0)}</div>
-                {!isCollapsed && <span className="truncate">{userName}</span>}
+                {!isCompact && <span className="truncate">{userName}</span>}
               </div>
-              {!isCollapsed && <MoreHorizontal size={16} className="text-gray-400 shrink-0" />}
+              {!isCompact && <MoreHorizontal size={16} className="text-gray-400 shrink-0" />}
             </button>
 
             {/* Logout Popup */}
             {showUserMenu && (
-              <div className={`absolute bottom-full mb-2 ${isCollapsed ? 'left-4' : 'right-4 w-48'} bg-white border border-gray-200 shadow-lg rounded-xl p-2 z-50`}>
+              <div className={`absolute bottom-full mb-2 ${isMobileOpen ? 'left-0 w-full' : isCompact ? 'left-4' : 'right-4 w-48'} bg-white border border-gray-200 shadow-lg rounded-xl p-2 z-50`}>
                 <button className="w-full flex items-center gap-2 p-2 hover:bg-red-50 text-red-600 rounded-lg text-sm font-medium transition-colors">
                   <LogOut size={16} /> Logout
                 </button>
