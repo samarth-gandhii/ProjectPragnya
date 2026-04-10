@@ -37,6 +37,8 @@ export default function Sidebar({
     { id: 6, topicId: "linear-regression", title: "Linear Regression Plane" },
     { id: 7, topicId: "pipeline", title: "Cloud Data Pipeline Structure" },
   ];
+  const recentScrollLimit = 5;
+  const shouldScrollRecent = dummyHistory.length > recentScrollLimit;
 
   // References for the click-outside logic
   const addContentRef = useRef<HTMLDivElement>(null);
@@ -116,7 +118,7 @@ export default function Sidebar({
       )}
 
       <aside
-        className={`${isCollapsed ? 'md:w-20' : 'md:w-64'} ${isMobileOpen ? 'fixed inset-y-0 left-0 w-72 z-50 flex' : 'hidden'} md:flex md:relative md:inset-auto transition-all duration-300 bg-[#fbfbfb] border-r border-gray-200 flex-col justify-between h-full`}
+        className={`${isCollapsed ? 'md:w-20' : 'md:w-64'} ${isMobileOpen ? 'fixed inset-y-0 left-0 w-72 z-50 flex' : 'hidden'} md:flex md:fixed md:left-0 md:top-0 md:h-screen transition-all duration-300 bg-[#fbfbfb] border-r border-gray-200 flex-col overflow-hidden`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -181,7 +183,7 @@ export default function Sidebar({
 
             {!isCompact && <div className="px-6 py-2 mt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Recent</div>}
             {!isCompact && (
-              <div className="px-3 space-y-1 mb-3">
+              <div className={`px-3 space-y-1 mb-3 ${shouldScrollRecent ? 'max-h-52 overflow-y-auto hide-scrollbar pr-1' : ''}`}>
                 {dummyHistory.map((item) => (
                   <button
                     key={item.id}

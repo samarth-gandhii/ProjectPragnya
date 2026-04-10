@@ -29,7 +29,7 @@ export default function TopicPage({ params }: TopicPageProps) {
         onHistoryClick={() => router.push("/history")}
         onHistoryItemClick={(id) => router.push(`/topic/${id}`)}
       />
-      <main className="flex-1 overflow-y-auto bg-white relative flex flex-col min-w-0">
+      <main className="flex-1 overflow-y-auto bg-white relative flex flex-col min-w-0 md:ml-64">
         {topicId ? (
           <Cards topicId={topicId} />
         ) : (

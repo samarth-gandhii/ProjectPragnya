@@ -27,7 +27,7 @@ export default function HistoryPage() {
         onHistoryItemClick={(topicId) => router.push(`/topic/${topicId}`)}
       />
 
-      <main className="flex-1 overflow-y-auto bg-white relative flex flex-col min-w-0">
+      <main className="flex-1 overflow-y-auto bg-white relative flex flex-col min-w-0 md:ml-64">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 pt-14 sm:pt-16 md:pt-20 pb-10 md:pb-12 w-full">
           <div className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">History</h1>

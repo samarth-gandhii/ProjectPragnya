@@ -37,7 +37,7 @@ function ChatPageContent() {
         onHistoryItemClick={(topicId) => router.push(`/topic/${topicId}`)}
       />
 
-      <main className="flex-1 overflow-y-auto bg-white relative flex flex-col min-w-0">
+      <main className="flex-1 overflow-y-auto bg-white relative flex flex-col min-w-0 md:ml-64">
         <Space
           key={remountKey}
           initialPrompt={initialPrompt}
