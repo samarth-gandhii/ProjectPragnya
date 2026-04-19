@@ -3,7 +3,7 @@
 import os
 import asyncio
 from langchain_core.prompts import ChatPromptTemplate
-from services.llm_client import gemini_llm
+from services.llm_client import generation_llm
 
 os.makedirs("Cards", exist_ok=True)
 
@@ -87,7 +87,7 @@ async def generate_single_card():
     template_str = ALGORITHM_TEMPLATE if topic_data["type"] == "algorithm" else SPACE_TEMPLATE
     prompt = ChatPromptTemplate.from_template(template_str)
     
-    chain = prompt | gemini_llm
+    chain = prompt | generation_llm
     
     response = await chain.ainvoke({
         "topic": topic_data["name"],

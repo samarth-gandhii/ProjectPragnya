@@ -10,6 +10,7 @@ const HISTORY_ITEMS = [
   { id: "2", topicId: "greedy", title: "Greedy Algorithms", excerpt: "When local choices lead to global solutions" },
   { id: "3", topicId: "a-star", title: "A* Search Algorithm", excerpt: "Heuristic pathfinding in action" },
   { id: "4", topicId: "solar-system", title: "Solar System Basics", excerpt: "Planetary motion and orbital intuition" },
+  { id: "5", topicId: "blackhole", title: "Blackhole: Dark Mystery", excerpt: "Explore the dark mysteries of the cosmos" },
 ];
 
 export default function HistoryPage() {
